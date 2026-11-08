@@ -52,19 +52,19 @@
 ├── gen_debug_probes.tcl           # 重生成 ILA probes (.ltx)
 ├── Sources/
 │   ├── hdl/
-│   │   ├── top/                   # top.v / spi_flash_reader.v / clocks / debouncer ...
-│   │   ├── shift_left/  shift_right/   # 两个 RM
-│   │   └── count_up/    count_down/    # 备用 RM（教程遗留）
-│   ├── xdc/                       # top_myb.xdc（pblock / 引脚 / 时钟）+ budget xdc
-│   ├── scripts/                   # gen_ip / pr_info / update_prc / axi_lite_procs / regen_ila
+│   │   ├── top/                   # top.v / spi_flash_reader.v / clocks.v / debouncer.v / shift_rp.v
+│   │   └── shift_left/  shift_right/   # 两个 RM
+│   ├── xdc/                       # top_myb.xdc（pblock / 引脚 / 时钟 / RESET_AFTER_RECONFIG）
+│   ├── scripts/                   # gen_ip_myb / pr_info_myb / update_prc_myb
 │   └── ip/                        # 仅保留 canonical IP 的 .xci（见 .gitignore）
 ├── Tcl_HD/                        # UG947 hierarchical-design 流程库
-├── sim/                           # spi_flash_reader  testbench + SPI Flash 行为模型
-└── ilaset/                        # 硬件调试 Tcl / 解析脚本（ILA 抓取、PRC 寄存器、flash verify）
+└── sim/                           # spi_flash_reader testbench + SPI Flash 行为模型（可选仿真验证）
 ```
 
 canonical IP（`design.tcl` 实际引用）：`prc_1`、`jtag_to_axi`、`ila_vs_shift`、
 `ila_axi_mem`、`ila_axi_reg`、`ila_icap`。仓库只保留它们的 `.xci`，生成产物不入库。
+greybox 的 budget xdc 由流程自动生成（`Tcl_HD/implement.tcl`，`hd.budget` 默认开启），无需入库。
+仓库仅面向 myb（AX7325）；教程其它板卡（kc705/vc707/vc709）脚本与遗留 count RM 已移除。
 
 ## 4. Flash 布局与 PRC 表
 
@@ -136,15 +136,19 @@ JTAG 间接编程会把 SPI Flash 留在 x4 / 连续读模式；不断电时 Fab
 - `hw_triggers` 改脉冲输出，消除上电自触发死循环。
 - PRC `DEVICE_ID` 配置修正。
 
-## 7. 调试工具（`ilaset/`、`sim/`）
+## 7. 仿真验证与调试提示
 
-- `sim/tb_spi_flash_reader.v` + `sim/spi_flash_model.v`：reader 全 burst 行为仿真。
-- `ilaset/verify_flash.tcl`：JTAG 只读校验整片 Flash（`program_hw_cfgmem` + `VERIFY=1`）。
-- `ilaset/jtag_load_partial.tcl`：JTAG 直接加载 partial，判别 static/RM 是否完好。
-- `ilaset/dump_prc_regs.tcl` / `read_status.tcl` / `poll_status.tcl`：JTAG 读 PRC 寄存器。
-- `ilaset/cmp_iprog.py`：检测 partial bitstream 是否含 `IPROG` / `DESYNC`。
-- `ilaset/rebuild_partials_reset0.tcl` / `rebuild_static_mcs_reset0.tcl`：§6.3 修复的重建脚本。
-- ILA  cores：`ila_axi_mem`(AXI/SPI)、`ila_icap`(ICAP 写侧)、`ila_vs_shift`(PRC/VS)、`ila_axi_reg`(寄存器总线)。
+- `sim/tb_spi_flash_reader.v` + `sim/spi_flash_model.v`：reader 连续多 burst 行为仿真
+  （非构建必需，无板验证突边界 / rlast / FSM）：
+
+  ```bash
+  cd sim
+  xvlog ../Sources/hdl/top/spi_flash_reader.v spi_flash_model.v tb_spi_flash_reader.v
+  xelab tb_spi_flash_reader -s tb_sim
+  xsim tb_sim -R -testplusarg NUM_BURSTS=472 -testplusarg LAST_BEATS=131   # 回放真实整条流，见 opts_full.txt
+  ```
+
+- ILA cores：`ila_axi_mem`(AXI/SPI)、`ila_icap`(ICAP 写侧)、`ila_vs_shift`(PRC/VS)、`ila_axi_reg`(寄存器总线)。
 
 ILA 触发注意：GUI 值框对总线探针要写**满 hex 位宽**（如 `00AEAXXX`），短值会静默约束错误的位；
 每次触发前 `key2` 复位以对齐 `reconfig_toggle` 奇偶（奇数次 key1 → `rm_shift_left` @ `0xAEA000`）。
@@ -167,3 +171,5 @@ ILA 触发注意：GUI 值框对总线探针要写**满 hex 位宽**（如 `00AE
 - 构建产物（`Implement/`、`Synth/`、`Bitstreams/` 等）不入库，按 §5 脚本复现；
   如需预烧镜像，请从 Release 获取或本地生成。
 - 旧版（`RESET_AFTER_RECONFIG=1`）产物备份于本地 `Bitstreams/backup_reset1/`（不入库）。
+- 仓库只保留 myb 复现所需文件：调试历史脚本（`ilaset/`）、其它板卡（kc705/vc707/vc709）脚本、
+  遗留 count RM / VHDL 均已移除；修复已固化在 `top_myb.xdc` / `pr_info_myb.tcl`，按 §5 正常流程即可复现。

@@ -14,13 +14,24 @@ usage_statistics_webtalk.*
 # ---- Prebuilt binaries (regenerate via scripts; ship via Release if desired) ----
 Bitstreams/
 
-# ---- Debug capture data / scratch (keep the .tcl/.py tooling) ----
-ilaset/*.csv
-ilaset/*.txt
-ilaset/*.log
-ilaset/exp/
-ilaset/*.ltx
-ilaset/*.prm
+# ---- Debug history / other-board leftovers (removed from repo, kept locally) ----
+ilaset/
+create_prom_file_kc705.tcl
+create_prom_file_vc707.tcl
+create_prom_file_vc709.tcl
+Sources/scripts/*_kc705.tcl
+Sources/scripts/*_vc707.tcl
+Sources/scripts/*_vc709.tcl
+Sources/scripts/axi_lite_procs.tcl
+Sources/scripts/regen_ila_*.tcl
+Sources/xdc/top_kc705.xdc
+Sources/xdc/top_vc707.xdc
+Sources/xdc/top_vc709.xdc
+Sources/xdc/*_budget.xdc
+Sources/hdl/count_up/
+Sources/hdl/count_down/
+Sources/hdl/top/count_rp.v
+Sources/hdl/top/*.vhd
 sim/xsim.dir/
 sim/*.log
 sim/*.jou

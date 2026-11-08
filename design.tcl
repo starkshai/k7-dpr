@@ -22,35 +22,16 @@ source $tclDir/pr_utils.tcl
 
 ###############################################################
 ### Define target demo board
-### Valid values are myb, kc705, vc707, vc709
-### Select one only
+### This repository targets the AX7325 (myb) board only.
 ###############################################################
 set xboard        "myb"
-#set xboard        "kc705"
-#set xboard        "vc707"
-#set xboard        "vc709"
 
 ###############################################################
-### Define Part, Package, Speedgrade 
+### Define Part, Package, Speedgrade
 ###############################################################
-switch $xboard {
-vc707 {
- set device       "xc7vx485t"
- set package      "ffg1761"
- set speed        "-2"
-}
-vc709 {
- set device       "xc7vx690t"
- set package      "ffg1761"
- set speed        "-2"
-}
-default {
- #myb / kc705
- set device       "xc7k325t"
- set package      "ffg900"
- set speed        "-2"
-}
-}
+set device       "xc7k325t"
+set package      "ffg900"
+set speed        "-2"
 set part         $device$package$speed
 check_part $part
 

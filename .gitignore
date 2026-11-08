@@ -1,0 +1,52 @@
+# ---- Vivado build artifacts / caches ----
+.Xil/
+.cache/
+Implement/
+Synth/
+Checkpoint/
+hd_visual/
+usage_statistics_webtalk.*
+*.log
+*.jou
+*.backup.jou
+*.backup.log
+
+# ---- Prebuilt binaries (regenerate via scripts; ship via Release if desired) ----
+Bitstreams/
+
+# ---- Debug capture data / scratch (keep the .tcl/.py tooling) ----
+ilaset/*.csv
+ilaset/*.txt
+ilaset/*.log
+ilaset/exp/
+ilaset/*.ltx
+ilaset/*.prm
+sim/xsim.dir/
+sim/*.log
+sim/*.jou
+sim/*.pb
+sim/webtalk*
+analyze_ila*
+PR_DEBUG_HANDOFF.md
+
+# ---- IP: keep ONLY the six canonical .xci; all generated output & dup dirs excluded ----
+Sources/ip/**
+!Sources/ip/prc_1/
+!Sources/ip/prc_1/prc.xci
+!Sources/ip/jtag_to_axi/
+!Sources/ip/jtag_to_axi/jtag_to_axi.xci
+!Sources/ip/ila_vs_shift/
+!Sources/ip/ila_vs_shift/ila_vs_shift.xci
+!Sources/ip/ila_axi_mem/
+!Sources/ip/ila_axi_mem/ila_axi_mem.xci
+!Sources/ip/ila_axi_reg/
+!Sources/ip/ila_axi_reg/ila_axi_reg.xci
+!Sources/ip/ila_icap/
+!Sources/ip/ila_icap/ila_icap.xci
+
+# ---- Root-level scratch / vendor reference not needed to build ----
+spiflash*.PNG
+top_io_myb.xdc
+prc_bitstream_sizes_lab5_2018.3.xlsx
+AX7325开发板原理图.pdf
+readme.txt

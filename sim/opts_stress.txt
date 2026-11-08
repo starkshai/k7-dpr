@@ -1,0 +1,5 @@
+-R
+-testplusarg NUM_BURSTS=472
+-testplusarg LAST_BEATS=131
+-testplusarg STRESS_RREADY=1
+-testplusarg IDLE_GAPS=50

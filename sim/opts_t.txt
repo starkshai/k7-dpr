@@ -1,0 +1,3 @@
+-R
+-testplusarg NUM_BURSTS=1
+-testplusarg trace
